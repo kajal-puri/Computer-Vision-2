@@ -14,24 +14,43 @@ def read_data_reg(filename):
 #takes features with bias X (num_samples*(1+num_features)) and target values Y (num_samples*target_dims)
 #returns regression coefficients w ((1+num_features)*target_dims)
 def lin_reg(X, Y):
-    pass
+    ## w= (X^TX)^{-1} X^T Y  ## Slides-16,label,y=w; param,w=\phi=[\phi_0,\phi_1]
+    # print(X.shape) #(603, 511)
+    # print(Y.shape) #(100,2)
+    X_T  = np.transpose(X) # (511, 603)
+    x_T_x_inv = inv(np.dot(X_T,X)) # (511, 603).(603, 511)=(511, 511)
+    w = x_T_x_inv @ X_T @ Y # (511, 511)*(511, 603)*(100,2)= (100, 2)
+    return w
 
 #takes features with bias X (num_samples*(1+num_features)), target Y (num_samples*target_dims) and regression coefficients w ((1+num_features)*target_dims)
 #returns fraction of mean square error and variance of target prediction separately for each target dimension
 def test_lin_reg(X, Y, w):
-    pass
+    prediction = np.dot(X,w)
+    diff = Y-prediction
+    mse = np.mean(np.multiply(diff,diff),axis=0)
+    var_y = np.var(Y, axis=0)
+    return mse/var_y
 
 #takes features with bias X (num_samples*(1+num_features)), centers of clusters C (num_clusters*(1+num_features)) and std of RBF sigma
 #returns matrix with scalar product values of features and cluster centers in higher embedding space (num_samples*num_clusters)
 def RBF_embed(X, C, sigma):
-    pass
+    '''
+    z_i = exp(-(x-c)^2/sigma^2 = exp(-(x^2-2xc+c^2)/sigma^2)
+    '''
+    x_square =np.sum(X*X,axis=1,keepdims=True) # (301, 1)
+    c_square = np.sum(C*C,axis=1, keepdims=True).T #(1, 100)
+    x_c = X@C.T # (301, 100)
+    distance = (x_square-2* x_c+c_square)/(sigma*sigma) # (301, 100)
+    z_i = np.exp(-distance) # (301, 100)
+    return z_i
 
 ############################################################################################################
 #Linear Regression
 ############################################################################################################
 
 def run_lin_reg(X_tr, Y_tr, X_te, Y_te):
-
+    w = lin_reg(X_tr,Y_tr)
+    err = test_lin_reg(X_te,Y_te,w) #(100, 2)
     print('MSE/Var linear regression')
     print(err)
 
@@ -39,11 +58,24 @@ def run_lin_reg(X_tr, Y_tr, X_te, Y_te):
 #Dual Regression
 ############################################################################################################
 def run_dual_reg(X_tr, Y_tr, X_te, Y_te, tr_list, val_list):
+    print("====== Dual Regression =====")
+    opt_sigma = 1.0
+    min_error = 10e+1
     for sigma_pow in range(-5, 3):
         sigma = np.power(3.0, sigma_pow)
+        x_tr_emb = RBF_embed(X_tr[tr_list,:],X_tr[tr_list,:],sigma)
+        x_val_emb = RBF_embed(X_tr[val_list,:],X_tr[tr_list,:],sigma)
+        w = lin_reg(x_tr_emb,Y_tr[tr_list,:])
+        err_dual = test_lin_reg(x_val_emb,Y_tr[val_list,:],w)
         print('MSE/Var dual regression for val sigma='+str(sigma))
         print(err_dual)
+        if(np.max(err_dual)<min_error):
+            min_error = np.max(err_dual)
+            opt_sigma = sigma
+            opt_w = w
 
+    x_te_emb = RBF_embed(X_te,X_tr[tr_list,:],opt_sigma)
+    err_dual = test_lin_reg(x_te_emb,Y_te,opt_w)
     print('MSE/Var dual regression for test sigma='+str(opt_sigma))
     print(err_dual)
 
@@ -51,13 +83,34 @@ def run_dual_reg(X_tr, Y_tr, X_te, Y_te, tr_list, val_list):
 #Non Linear Regression
 ############################################################################################################
 def run_non_lin_reg(X_tr, Y_tr, X_te, Y_te, tr_list, val_list):
+    print("====== Non Linear Regression =====")
     from sklearn.cluster import KMeans
     for num_clusters in [10, 30, 100]:
+        kmeans = KMeans(n_clusters=num_clusters).fit(X_tr[tr_list,:])
+        opt_sigma = 1.0
+        opt_kmeans = None
+        opt_num_clusters=None
+        min_error = 10e+1
         for sigma_pow in range(-5, 3):
             sigma = np.power(3.0, sigma_pow)
+            train_z_i = RBF_embed(X_tr[tr_list,:],kmeans.cluster_centers_,sigma)
+            x_tr_emb = np.concatenate((train_z_i, np.ones((X_tr[tr_list,:].shape[0],1))),axis=1 )
+            val_z_i = RBF_embed(X_tr[val_list,:],kmeans.cluster_centers_,sigma)
+            x_val_emb  = np.concatenate((val_z_i, np.ones((X_tr[val_list,:].shape[0],1))),axis=1 )
+            w = lin_reg(x_tr_emb,Y_tr[tr_list,:])
+            err_dual = test_lin_reg(x_val_emb,Y_tr[val_list,:],w)
             print('MSE/Var non linear regression for val sigma='+str(sigma)+' val num_clusters='+str(num_clusters))
             print(err_dual)
+            if(np.max(err_dual)<min_error):
+                min_error = np.max(err_dual)
+                opt_sigma = sigma
+                opt_num_clusters = num_clusters
+                opt_kmeans = kmeans
+                opt_w = w
 
+    test_z_i = RBF_embed(X_te,opt_kmeans.cluster_centers_,opt_sigma)
+    x_te_emb = np.concatenate( (test_z_i, np.ones((X_te.shape[0],1)) ), axis=1 )
+    err_dual = test_lin_reg(x_te_emb,Y_te,opt_w)
     print('MSE/Var non linear regression for test sigma='+str(opt_sigma)+' test num_clusters='+str(opt_num_clusters))
     print(err_dual)
 
@@ -131,13 +184,13 @@ def run_classification(X_tr, Y_tr, X_te, Y_te, step_size):
 Y_tr, X_tr = read_data_reg('./data/regression_train.txt')
 Y_te, X_te = read_data_reg('./data/regression_test.txt')
 
-#run_lin_reg(X_tr, Y_tr, X_te, Y_te)
+run_lin_reg(X_tr, Y_tr, X_te, Y_te)
 
 tr_list = list(range(0, int(X_tr.shape[0]/2)))
 val_list = list(range(int(X_tr.shape[0]/2), X_tr.shape[0]))
 
-#run_dual_reg(X_tr, Y_tr, X_te, Y_te, tr_list, val_list)
-#run_non_lin_reg(X_tr, Y_tr, X_te, Y_te, tr_list, val_list)
+run_dual_reg(X_tr, Y_tr, X_te, Y_te, tr_list, val_list)
+run_non_lin_reg(X_tr, Y_tr, X_te, Y_te, tr_list, val_list)
 
 step_size = 0.0001
 Y_tr, X_tr = read_data_cls('test')
@@ -148,6 +201,7 @@ run_classification(X_tr, Y_tr, X_te, Y_te, step_size)
 #test set loss=78.80002497898153 accuracy=0.5
 
 #Answer 2(a). We couldn't get accuracy more than 50% because our model got probably stuck in local minima
+#because of low step-size (learning rate)
 
 
 
