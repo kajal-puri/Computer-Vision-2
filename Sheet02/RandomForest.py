@@ -37,3 +37,32 @@ class Forest():
         return predictions
 
     # feel free to add any helper functions
+    # Function to intialize forest with pre-trained trees
+    def initialise_with_pretrained(self, trees):
+        for i, t in enumerate(self.trees):
+            t.initialise_with_pretrained(trees[i])
+
+    def save_forest(self):
+
+        rec = []
+        for i in range(self.ntrees):
+            rec.append([])
+            tree = self.trees[i]
+
+            for node in tree.nodes:
+                if node.type == 'split':
+                    tmp = {}
+                    tmp['color'] = node.feature['color']
+                    tmp['location'] = node.feature['pixel_location']
+                    tmp['th'] = node.feature['th']
+                    tmp['left'] = node.leftChild
+                    tmp['right'] = node.rightChild
+                    tmp['type'] = 'split'
+                else:
+                    tmp = {'probabilities ': node.probabilities, 'type': 'leaf'}
+
+                rec[i].append(tmp)
+
+        with open('RandomForest_check.json', 'w') as outfile:
+            json.dump(rec, outfile)
+
