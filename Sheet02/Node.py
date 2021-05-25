@@ -13,23 +13,21 @@ class Node():
     # Function to create a new split node
     # provide your implementation
     def create_SplitNode(self, leftchild, rightchild, feature):
-
-      self.type = 'split'
-      self.leftchild = leftchild
-      self.rightchild = rightchild
-      self.feature['color'] = feature['color']
-      self.feature['th'] = feature['th']
-      self.feature['pixel_location'] = feature['location']
+        self.type = 'split'
+        self.leftChild = leftchild
+        self.rightChild = rightchild
+        self.feature['color'] = float(feature['color_channel'])
+        self.feature['pixel_location']= feature['location'].tolist()
+        self.feature['th'] = float(feature['th'])
 
     # Function to create a new leaf node
     # provide your implementation
     def create_leafNode(self, labels, classes):
+        self.type= 'leaf'
+        N = len(labels)
+        for c in classes:
+            prob_c = len(np.argwhere(labels==c))
+            self.probabilities.append(float(prob_c)/N)
 
-      self.type = 'leaf'
-      total_labels = len(labels)
 
-      for clas in classes:
-        count = 0
-        if(np.nonzero(labels==clas)):
-          count = count + 1
-          probabilites.append(count/total_labels)
+    # feel free to add any helper functions
