@@ -30,13 +30,23 @@ def main():
 
     rand_forest = Forest(training_imgs,training_lbls,tree_params,n_trees)
     rand_forest.create_forest()
+    rand_forest.save_forest() ## RandomForest_check.json
+    print("Random Forest is saved....")
+
+    ##
+    # Load the pretrained forest
+    print("Loading the pre-trained forest")
+    with open('RandomForest_check.json') as json_file:
+        pretrained = json.load(json_file)
+    random_forest = Forest(n_trees, mode='test')
+    random_forest.initialise_with_pretrained(pretrained)
     test_images_files = open("images/test_images.txt", "r")
     for j, f_name in enumerate(test_images_files):
         if j > 0:
             print('Applying Forest to test image : ' + str(j))
             img, label = f_name.split(' ')
             im = cv2.imread('images/' + img)
-            lp = f.test(im)
+            lp = random_forest.test(im)
             plt.imshow(lp)
             plt.show()
 
