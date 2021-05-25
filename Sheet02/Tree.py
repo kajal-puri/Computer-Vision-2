@@ -6,16 +6,16 @@ from Sampler import PatchSampler
 np.random.seed(2007)
 
 class DecisionTree():
-    def __init__(self, patches, labels, tree_param):
-
-        self.patches, self.labels = patches, labels
-        self.depth = tree_param['depth']
-        self.pixel_locations = tree_param['pixel_locations']
-        self.random_color_values = tree_param['random_color_values']
-        self.no_of_thresholds = tree_param['no_of_thresholds']
-        self.minimum_patches_at_leaf = tree_param['minimum_patches_at_leaf']
-        self.classes = tree_param['classes']
-        self.patch_size = tree_param['patch_size']
+    def __init__(self, patches, labels, tree_param,mode='train'):
+        if(mode=="train"):
+            self.patches, self.labels = patches, labels
+            self.depth = tree_param['depth']
+            self.pixel_locations = tree_param['pixel_locations']
+            self.random_color_values = tree_param['random_color_values']
+            self.no_of_thresholds = tree_param['no_of_thresholds']
+            self.minimum_patches_at_leaf = tree_param['minimum_patches_at_leaf']
+            self.classes = tree_param['classes']
+            self.patch_size = tree_param['patch_size']
         self.nodes = []
 
     # Function to train the tree
