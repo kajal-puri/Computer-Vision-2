@@ -17,9 +17,9 @@ class Node():
       self.type = 'split'
       self.leftchild = leftchild
       self.rightchild = rightchild
-      self.feature['color'] = feature['color']
-      self.feature['th'] = feature['th']
-      self.feature['pixel_location'] = feature['location']
+      self.feature['color'] = float(feature['color'])
+      self.feature['th'] = float(feature['th'])
+      self.feature['pixel_location'] = feature['location'].tolist()
 
     # Function to create a new leaf node
     # provide your implementation
