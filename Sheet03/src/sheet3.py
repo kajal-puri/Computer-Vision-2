@@ -222,11 +222,10 @@ def task5():
 			imgFile_paths.append(img_path)
 
 
-	count = 1
+
 	for img_file_path in imgFile_paths:
 		my_detector.detection_scalePyramid(img_file_path,hog)
-		print("Image No: ",count)
-		count+=1
+		
 	print('Done!')
 	cv.waitKey()
 	cv.destroyAllWindows()
