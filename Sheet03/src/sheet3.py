@@ -248,8 +248,10 @@ if __name__ == "__main__":
     #task3()
 
     #Task 4 - Calculate Precision and Recall 
-    task4()
+    # task4()
 
     # Task 5 - Multiple Detections
-    #task5()
-
+    task5()
+	"""
+	0.1 is the good value for the elimintation threshold when applying NMS 
+	"""
