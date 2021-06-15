@@ -3,7 +3,7 @@ import numpy as np
 import random
 import seaborn as sns
 import matplotlib.pyplot as plt
-
+import os
 from custom_hog_detector import Custom_Hog_Detector
 # Global constants
 
@@ -204,18 +204,32 @@ def task4():
 
 def task5():
 
-    print ('Task 5 - Eliminating redundant Detections')
-    
+	print ('Task 5 - Eliminating redundant Detections')
+	svm_fPath = "SVM_1_.dat"
+	my_svm_filename = cv.ml.SVM_load(svm_fPath)
 
-    # TODO: Write your own custom class myHogDetector 
-      
-    my_detector = Custom_Hog_Detector(my_svm_filename)
-   
-    # TODO Apply your HOG detector on the same test images as used in task 1 and display the results
+	# TODO: Write your own custom class myHogDetector
 
-    print('Done!')
-    cv.waitKey()
-    cv.destroyAllWindows()
+	my_detector = Custom_Hog_Detector(my_svm_filename)
+	hog = cv.HOGDescriptor()
+	# TODO Apply your HOG detector on the same test images as used in task 1 and display the results
+	file_path = test_images_1+ "filenames.txt"
+	imgFile_paths =[]
+	with open(file_path,"r") as myFile:
+		for line in myFile:
+			img_name = line.rstrip(".")[2:]
+			img_path = os.path.join(test_images_1,img_name).strip()
+			imgFile_paths.append(img_path)
+
+
+	count = 1
+	for img_file_path in imgFile_paths:
+		my_detector.detection_scalePyramid(img_file_path,hog)
+		print("Image No: ",count)
+		count+=1
+	print('Done!')
+	cv.waitKey()
+	cv.destroyAllWindows()
 
 
 
