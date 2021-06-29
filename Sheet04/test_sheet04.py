@@ -164,21 +164,7 @@ def main():
 
     ### Load Saved model
     # model.load_state_dict(torch.load("./model_deeper_bn")) ##  model_shallow  model_wider   model_deeper  model_deeper_bn
-    ## Access and save weights of the model
-    weight_dict = defaultdict(list)
-    for name,param in model.named_parameters():
-        weight_dict['param_name'].append(name)
-        weight_dict['param_shape'].append(param.shape)
-        weight_dict['param_value'].append(param.data)
-
-    ## shallow_model_weights.txt   wider_model_weights.txt   deeper_model_weights.txt   deeperBn_model_weights.txt
-    with open("deeperBn_model_weights.txt",'wb')as out_file:
-        pickle.dump(weight_dict,out_file)
-
-    ### Load weight dictionary
-    # with open("deeperBn_model_weights.txt","rb") as in_file:
-    #     wt_dict = pickle.load(in_file)
-    # print(wt_dict)
+    
     ## Test
     ### TODO ####
     model.eval()
