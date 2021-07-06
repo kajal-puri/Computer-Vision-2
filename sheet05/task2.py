@@ -1,9 +1,16 @@
 import numpy as np
 # !!!! Don't include any other package !!!!
 
+import numpy as np
+import cv2 as cv
+import cv2.xfeatures2d as features
+import os
+import yaml
+from sklearn.neighbors import KNeighborsClassifier
+
 #!!! This function will be used in task3! 
 
-def knn_classification(knn:int, img_num:int, distances: np.ndarray, response_hists):    
+def knn_classification(knn:int, img_num:int, distances: np.ndarray, response_hists=None):    
     print("Classify with knn = %d" % knn)
     #final_distances = []
     final_labels = []

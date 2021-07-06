@@ -7,67 +7,6 @@ import yaml
 #from sklearn.cluster import MiniBatchKMeans
 from sklearn.neighbors import KNeighborsClassifier
 
-def create_lable_vector():
-
-    label_vector = [
-    'shampoo',
-    'medicin',
-    'milkBIO',
-    'juiceAPPLE',
-    'juiceORANGE',
-    'juiceHAPPY',
-    'waterVITTEL',
-    'dressing',
-    'candida',
-    'chips',
-    'toilettePaper',
-    'beer',
-    'clock',
-    'candidaLEMON',
-    'drummer',
-    'cat',
-    'apple',
-    'monstertruck',
-    'plane',
-    'mic',
-    'paper',
-    'zebra',
-    'tom',
-    'hairdryer',
-    'basket',
-    'shoe',
-    'walkman',
-    'camera',
-    'Total',
-    'muiltisocket',
-    'babyShampoo',
-    'thaiRice',
-    'teaCup',
-    'babyPhone',
-    'cup',
-    'planeWithPilot',
-    'babySoundThing',
-    'coockingPot',
-    'trumpet',
-    'weirdGuy',
-    'shoeRed',
-    'fruits',
-    'mocca',
-    'littelAngelRice',
-    'polizei',
-    'nescafe',
-    'miniDisk',
-    'videoTape',
-    'bookReterieval',
-    'cupGoofi',
-    'schneider',
-    'fireWire',
-    'oracle8'
-    ]
-
-    return label_vector
-
-
 def generate_bow_response_hist(vocabulary_path, image_path, img_num, bag_num, feat_type='SIFT'):
     voc_file_path = os.path.join(vocabulary_path, 'vocabulary.yaml')
 
