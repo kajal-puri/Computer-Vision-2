@@ -1,6 +1,6 @@
 import numpy as np
 import os
-import cv2
+import cv2 as cv
 import cv2.xfeatures2d as features
 import yaml
 
