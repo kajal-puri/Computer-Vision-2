@@ -8,8 +8,8 @@ from task3 import task_3
 
 def main():
     # =========================== Parameter =============================
-    img_num = # ToDO
-    bag_num = # ToDO
+    img_num = 265
+    bag_num = 54
 
     vocabulary_path = "./offline/{:04d}".format(bag_num)
     image_path = "./images/"
