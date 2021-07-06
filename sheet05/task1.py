@@ -109,4 +109,4 @@ def task_1(image_path: str, vocabulary_path: str, img_num: int, bag_num: int) ->
     
     return response_hists_surf, response_hists_sift
 
-    r#eturn response_hists
+    #return response_hists
